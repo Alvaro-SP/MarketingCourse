@@ -12,7 +12,7 @@ def generate_qr(no_serie):
         box_size=10,
         border=4,
     )
-    qr.add_data(no_serie)
+    qr.add_data('http://192.168.0.24:5173/'+no_serie)
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white")

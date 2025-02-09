@@ -1,5 +1,7 @@
 from flask import Flask, request, jsonify
-from src.QrAdd import generate_qr, insert_tool
+from src.QrAdd import insert_tool
+from src.Tools import toolsget
+from src.User import register, login
 
 from flask_cors import CORS
 app = Flask(__name__)
@@ -9,9 +11,9 @@ app.config['DEBUG'] = True
 app.config['TESTING'] = True
 
 #! Endpoint para obtener todas las MOVIES
-@app.route('/generate_qr', methods=['GET'])
-def gen_qr():
-    response = generate_qr()
+@app.route('/tools', methods=['GET'])
+def get_tools():
+    response = toolsget()
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
@@ -19,6 +21,20 @@ def gen_qr():
 @app.route('/tool', methods=['POST'])
 def add_tool():
     resprev = insert_tool(request)
+    resprev.headers.add('Access-Control-Allow-Origin', '*')
+    return resprev
+
+#! Endpoint para registrar usuario
+@app.route('/register', methods=['POST'])
+def retister_user():
+    resprev = register(request)
+    resprev.headers.add('Access-Control-Allow-Origin', '*')
+    return resprev
+
+#! Endpoint para loggear usuario
+@app.route('/login', methods=['POST'])
+def login_user():
+    resprev = login(request)
     resprev.headers.add('Access-Control-Allow-Origin', '*')
     return resprev
 

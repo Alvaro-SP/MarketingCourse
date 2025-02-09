@@ -1,88 +1,106 @@
 import React, { useEffect, useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
+import RegisterTool from "./components/RegisterTool";
 
-const App = () => {
-  const [tools, setTools] = useState([]);
-  const [name, setName] = useState("");
-  const [model, setModel] = useState("");
-  const [no_serie, setNo_serie] = useState("");
-  const [own, setOwn] = useState("");
-  const [manteni, setManteni] = useState("");
-  const [photo, setPhoto] = useState("");
-  const [description, setDescription] = useState("");
-  const handleFileChange = (event) => {
-    setPhoto(event.target.files[0]);
-  };
-  useEffect(() => {
-    fetchTools();
-  }, []);
+const Register = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const fetchTools = async () => {
-    const response = await axios.get("http://localhost:5000/tool");
-    setTools(response.data);
-  };
-  const handleSubmit = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    if (!photo) {
-      alert("Selecciona una imagen.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("model", model);
-    formData.append("no_serie", no_serie);
-    formData.append("own", own);
-    formData.append("manteni", manteni);
-    formData.append("photo", photo); // Aquí enviamos la imagen como BLOB
-
     try {
-        const response = await fetch("http://localhost:5000/tool", {
-            method: "POST",
-            body: formData, // Importante: no colocar headers 'Content-Type', Fetch lo hará automáticamente.
-        });
-
-        const result = await response.json();
-        console.log(result);
+      await axios.post("http://localhost:5000/register", { username, password });
+      navigate("/login");
     } catch (error) {
-        console.error("Error al enviar los datos:", error);
+      console.error("Error en registro", error);
     }
-      
-    setName("");
-    setModel("");
-    setNo_serie("");
-    setOwn("");
-    setManteni("");
-    setDescription("");
-    setPhoto(null);
-    // fetchTools();
   };
-
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold">Gestión de Herramientas</h1>
-      <form onSubmit={handleSubmit} className="mb-4">
-        <input type="text" placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} className="border p-2 m-2" />
-        <input type="text" placeholder="Modelo" value={model} onChange={(e) => setModel(e.target.value)} className="border p-2 m-2" />
-        <input type="text" placeholder="Número de Serie" value={no_serie} onChange={(e) => setNo_serie(e.target.value)} className="border p-2 m-2" />
-        <input type="text" placeholder="Propietario" value={own} onChange={(e) => setOwn(e.target.value)} className="border p-2 m-2" />
-        <input type="text" placeholder="Mantenimiento" value={manteni} onChange={(e) => setManteni(e.target.value)} className="border p-2 m-2" />
-        <input type="text" placeholder="Descripción" value={description} onChange={(e) => setDescription(e.target.value)} className="border p-2 m-2" />
-        <input type="file" accept="image/*" onChange={handleFileChange} />
-        <button type="submit" className="bg-blue-500 text-white p-2">Añadir</button>
+    <div>
+      <h2>Registro</h2>
+      <form onSubmit={handleRegister}>
+        <input type="text" placeholder="Usuario" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <button type="submit">Registrarse</button>
       </form>
+    </div>
+  );
+};
+
+const Login = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("http://localhost:5000/login", { username, password });
+      localStorage.setItem("token", response.data.token);
+      navigate("/");
+    } catch (error) {
+      console.error("Error en login", error);
+    }
+  };
+
+  return (
+    <div>
+      <h2>Login</h2>
+      <form onSubmit={handleLogin}>
+        <input type="text" placeholder="Usuario" value={username} onChange={(e) => setUsername(e.target.value)} required />
+        <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <button type="submit">Iniciar sesión</button>
+      </form>
+    </div>
+  );
+};
+
+const Tools = () => {
+  const [tools, setTools] = useState([]);
+  const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    if (!token) return;
+    axios.get("http://localhost:5000/tools", { headers: { Authorization: `Bearer ${token}` } })
+      .then(response => setTools(response.data))
+      .catch(error => console.error("Error al obtener herramientas", error));
+  }, [token]);
+
+  return (
+    <div>
+
+<RegisterTool />
+      <h1>Mis Herramientas</h1>
       <ul>
-        {tools.map((tool) => (
-          <li key={tool.id} className="border p-2 my-2">
+        {tools.map(tool => (
+          <li key={tool.id}>
             <p><strong>{tool.name}</strong></p>
-            <p>{tool.description}</p>
-            <img src={`http://localhost:8000/${tool.qr_code}`} alt="QR Code" className="w-24 h-24" />
-            {tool.photo && <img src={`http://localhost:8000/${tool.photo}`} alt="Tool" className="w-24 h-24" />}
+            <img src={`http://localhost:5000/${tool.qr_code}`} alt="QR Code" />
           </li>
         ))}
       </ul>
     </div>
+  );
+};
+
+
+
+const PrivateRoute = ({ element }) => {
+  return localStorage.getItem("token") ? element : <Navigate to="/login" />;
+};
+
+const App = () => {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<PrivateRoute element={<Tools />} />} />
+      </Routes>
+    </Router>
   );
 };
 

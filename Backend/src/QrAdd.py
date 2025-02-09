@@ -2,6 +2,7 @@ import mysql.connector
 from flask import jsonify
 import qrcode
 import os
+import io
 import json
 
 def generate_qr(no_serie):
@@ -15,6 +16,13 @@ def generate_qr(no_serie):
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white")
+
+    # Use io.BytesIO to store the image in memory
+    img_bytes = io.BytesIO()
+    img.save(img_bytes, format="PNG")  # Specify the format explicitly
+    qr_blob = img_bytes.getvalue()
+
+
     # Asegurar que el directorio existe
     qr_directory = os.path.join("Backend", "src", "qr")
     os.makedirs(qr_directory, exist_ok=True)
@@ -23,7 +31,7 @@ def generate_qr(no_serie):
     img.save(img_path)
     print(f"QR guardado en {img_path}")
 
-    return no_serie
+    return no_serie, qr_blob
 
 def insert_tool(request):
     # Parsear data
@@ -63,12 +71,11 @@ def insert_tool(request):
 
     # Preparar la consulta para insertar una herramienta
     sql = '''
-        INSERT INTO tools (name, model, no_serie, own, manteni, qr, photo)
-        VALUES (%s, %s, %s, %s, %s, %s, %s)'''
-    qr = generate_qr(no_serie)
-    valores = (name, model, no_serie, own, manteni, qr, photo_blob)
+        INSERT INTO tools (name, model, no_serie, own, manteni, qr, qr_image, photo)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'''
+    qr, qr_blob = generate_qr(no_serie)
+    valores = (name, model, no_serie, own, manteni, qr, qr_blob, photo_blob)
 
-    
     try:
         cursor.execute(sql, valores)
         conection.commit()

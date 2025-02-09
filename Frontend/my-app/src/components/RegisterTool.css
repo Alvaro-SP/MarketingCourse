@@ -1,0 +1,81 @@
+/* Fondo del modal que cubre toda la pantalla */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Asegura que el modal esté encima de todo */
+  }
+  
+  /* Estilo del contenido del modal */
+  .modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 600px;
+  }
+  
+  /* Estilo de la cabecera del modal */
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  /* Estilo del botón de cerrar */
+  .close-button {
+    font-size: 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: red;
+  }
+  
+  /* Estilo de los campos de entrada */
+  .input-field {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+  }
+  
+  /* Estilo del pie del modal */
+  .modal-footer {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  /* Estilo del botón de submit */
+  .submit-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .submit-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .tool-item {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+  }
+  
+  .tool-image {
+    width: 100px;
+    height: 100px;
+    margin-top: 10px;
+  }
+  

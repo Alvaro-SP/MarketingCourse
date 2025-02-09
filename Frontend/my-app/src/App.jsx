@@ -59,20 +59,29 @@ const Login = () => {
 };
 
 const Tools = () => {
+  
   const [tools, setTools] = useState([]);
   const token = localStorage.getItem("token");
-
   useEffect(() => {
-    if (!token) return;
-    axios.get("http://localhost:5000/tools", { headers: { Authorization: `Bearer ${token}` } })
-      .then(response => setTools(response.data))
-      .catch(error => console.error("Error al obtener herramientas", error));
-  }, [token]);
+    fetchTools();
+  }, []);
+  const fetchTools = async () => {
+    const response = await axios.post("http://localhost:5000/tools", {idusuario: 1});
+    setTools(response.data);
+    console.log(response.data);
+  };
+
+  // useEffect(() => {
+  //   if (!token) return;
+  //   axios.get("http://localhost:5000/tools", { headers: { Authorization: `Bearer ${token}` } })
+  //     .then(response => setTools(response.data))
+  //     .catch(error => console.error("Error al obtener herramientas", error));
+  // }, [token]);
 
   return (
     <div>
 
-<RegisterTool />
+      <RegisterTool />
       <h1>Mis Herramientas</h1>
       <ul>
         {tools.map(tool => (

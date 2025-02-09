@@ -11,9 +11,9 @@ app.config['DEBUG'] = True
 app.config['TESTING'] = True
 
 #! Endpoint para obtener todas las MOVIES
-@app.route('/tools', methods=['GET'])
+@app.route('/tools', methods=['POST'])
 def get_tools():
-    response = toolsget()
+    response = toolsget(request)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 

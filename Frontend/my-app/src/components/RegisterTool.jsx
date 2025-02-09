@@ -5,7 +5,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./RegisterTool.css";
 
 const RegisterTool = () => {
-  const [tools, setTools] = useState([]);
   const [name, setName] = useState("");
   const [model, setModel] = useState("");
   const [no_serie, setNo_serie] = useState("");
@@ -15,17 +14,12 @@ const RegisterTool = () => {
   const [description, setDescription] = useState("");
   const [showModal, setShowModal] = useState(false);
 
-  useEffect(() => {
-    fetchTools();
-  }, []);
+
   const handleFileChange = (event) => {
     setPhoto(event.target.files[0]);
   };
 
-  const fetchTools = async () => {
-    const response = await axios.get("http://localhost:5000/tool");
-    setTools(response.data);
-  };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();

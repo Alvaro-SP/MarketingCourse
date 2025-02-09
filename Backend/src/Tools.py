@@ -3,8 +3,9 @@ from flask import jsonify
 import qrcode
 import os
 import json
-
+import base64
 def toolsget(request):
+    print("Obteniendo herramientas")
     # Parsear data
     data = request.get_json()
     print(data)
@@ -36,14 +37,29 @@ def toolsget(request):
     # Preparar la consulta para insertar una herramienta
     sql = '''
         SELECT * FROM tools WHERE own = %s'''
-    valores = (idusuario)
-    print(valores)
-    print(sql)
+    valores = (idusuario,)
     toolsgetted = ''
     try:
         cursor.execute(sql, valores)
         # obtener las herramientas
         toolsgetted = cursor.fetchall()
+        serializable_tools = []
+        if toolsgetted:
+            for tool in toolsgetted:
+                serializable_tool = {}
+                for key, value in tool.items():
+                    if isinstance(value, bytes):
+                        if key in ['photo', 'qr_image'] and value:
+                            # Codificar las imágenes BLOB (solo si no son nulas)
+                            serializable_tool[key] = base64.b64encode(value).decode('utf-8')
+                        else:
+                            # Si el valor es un BLOB vacío, asignar None
+                            serializable_tool[key] = None
+                    else:
+                        serializable_tool[key] = value
+                serializable_tools.append(serializable_tool)
+
+        toolsgetted = serializable_tools
 
     except mysql.connector.Error as error:
         print(f"Error al insertar en la base de datos: {error}")

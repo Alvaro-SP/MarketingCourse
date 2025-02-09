@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import axios from "axios";
 import RegisterTool from "./components/RegisterTool";
+import ListTools from "./components/ListTools";
+import Webcam from "react-webcam";
+import jsQR from "jsqr";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -36,13 +39,15 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
+    alert("hola");
     e.preventDefault();
     try {
-      const response = await axios.post("http://localhost:5000/login", { username, password });
+      const response = await axios.post("http://192.168.0.24:5000/login", { username, password });
       localStorage.setItem("token", response.data.token);
       navigate("/");
     } catch (error) {
       console.error("Error en login", error);
+      alert(error);
     }
   };
 
@@ -52,11 +57,74 @@ const Login = () => {
       <form onSubmit={handleLogin}>
         <input type="text" placeholder="Usuario" value={username} onChange={(e) => setUsername(e.target.value)} required />
         <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button type="submit">Iniciar sesión</button>
+        <button type="submit" >Iniciar sesión</button>
       </form>
     </div>
   );
 };
+
+const QrScanner = () => {
+  const webcamRef = useRef(null);
+  const canvasRef = useRef(null);
+  const [qrResult, setQrResult] = useState("");
+  const [hasPermission, setHasPermission] = useState(false);
+  useEffect(() => {
+    // 📌 Pedir permisos explícitos en móviles
+    navigator.mediaDevices
+      .getUserMedia({ video: true })
+      .then(() => setHasPermission(true))
+      .catch((err) => {
+        console.error("No se pudo acceder a la cámara:", err);
+        setHasPermission(false);
+      });
+  }, []);
+  useEffect(() => {
+    if (!hasPermission) return;
+    const scanQRCode = () => {
+      if (webcamRef.current && canvasRef.current) {
+        const video = webcamRef.current.video;
+        if (video.readyState === 4) {
+          const canvas = canvasRef.current;
+          const ctx = canvas.getContext("2d");
+          canvas.width = video.videoWidth;
+          canvas.height = video.videoHeight;
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+          const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert",
+          });
+
+          if (code) {
+            console.log("QR detectado", code.data);
+            alert("qr detectado");
+            setQrResult(code.data);
+          }
+        }
+      }
+    };
+    console.log("scan");
+
+    const interval = setInterval(scanQRCode, 500); // Escanea cada 500ms
+    return () => clearInterval(interval);
+  }, [hasPermission]);
+
+  return (
+    <div>
+      {!hasPermission ? (
+        <button onClick={() => window.location.reload()}>
+          🔄 Activar Cámara
+        </button>
+      ) : (
+        <>
+          <Webcam ref={webcamRef} width={300} height={300} />
+          <canvas ref={canvasRef} style={{ display: "none" }} />
+          {qrResult && <p>📸 QR Detectado: {qrResult}</p>}
+        </>
+      )}
+    </div>
+  );
+}
 
 const Tools = () => {
   
@@ -66,14 +134,14 @@ const Tools = () => {
     fetchTools();
   }, []);
   const fetchTools = async () => {
-    const response = await axios.post("http://localhost:5000/tools", {idusuario: 1});
-    setTools(response.data);
+    const response = await axios.post("http://192.168.0.24:5000/tools", {idusuario: 1});
+    setTools(response.data.tools);
     console.log(response.data);
   };
 
   // useEffect(() => {
   //   if (!token) return;
-  //   axios.get("http://localhost:5000/tools", { headers: { Authorization: `Bearer ${token}` } })
+  //   axios.get("http://192.168.0.24:5000/tools", { headers: { Authorization: `Bearer ${token}` } })
   //     .then(response => setTools(response.data))
   //     .catch(error => console.error("Error al obtener herramientas", error));
   // }, [token]);
@@ -83,14 +151,7 @@ const Tools = () => {
 
       <RegisterTool />
       <h1>Mis Herramientas</h1>
-      <ul>
-        {tools.map(tool => (
-          <li key={tool.id}>
-            <p><strong>{tool.name}</strong></p>
-            <img src={`http://localhost:5000/${tool.qr_code}`} alt="QR Code" />
-          </li>
-        ))}
-      </ul>
+      <ListTools tools={tools} />
     </div>
   );
 };
@@ -107,6 +168,7 @@ const App = () => {
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/qrscanner" element={<QrScanner />} />
         <Route path="/" element={<PrivateRoute element={<Tools />} />} />
       </Routes>
     </Router>

@@ -2,6 +2,7 @@ import mysql.connector
 from flask import jsonify
 import qrcode
 import os
+import json
 
 def generate_qr(no_serie):
     qr = qrcode.QRCode(
@@ -23,11 +24,12 @@ def generate_qr(no_serie):
     print(f"QR guardado en {img_path}")
 
     return no_serie
-    
 
 def insert_tool(request):
     # Parsear data
-    data = request.get_json()
+    data = request.form
+    file = request.files["photo"]  # Capturar la imagen
+    photo_blob = file.read()  # Convertir la imagen en BLOB
 
     # Capturar datos
     name = data['name']
@@ -35,8 +37,10 @@ def insert_tool(request):
     no_serie = data['no_serie']
     own = data['own']
     manteni = data['manteni']
-    photo = data['photo']
-    print(f"Datos recibidos: {name}, {model}, {no_serie}, {own}, {manteni}, {photo}")
+    # photo = data['photo']
+   
+
+    print(f"Datos recibidos: {name}, {model}, {no_serie}, {own}, {manteni}")
     #* █████████████████████ CONNECT WITH DATABASE:█████████████████████
     try:
         conection = mysql.connector.connect(
@@ -62,23 +66,19 @@ def insert_tool(request):
         INSERT INTO tools (name, model, no_serie, own, manteni, qr, photo)
         VALUES (%s, %s, %s, %s, %s, %s, %s)'''
     qr = generate_qr(no_serie)
-    valores = (name, model, no_serie, own, manteni, qr, photo)
-    sql = cursor.execute(sql, valores)
-    conection.commit()
+    valores = (name, model, no_serie, own, manteni, qr, photo_blob)
 
+    
+    try:
+        cursor.execute(sql, valores)
+        conection.commit()
+        res_id = cursor.lastrowid  # Obtener el ID insertado
+    except mysql.connector.Error as error:
+        print(f"Error al insertar en la base de datos: {error}")
+        conection.rollback()
+        res_id = None
 
-    # Obtener el usuario
-    res = cursor.fetchone()
-
-    # Cerar la conexión
+    cursor.close()
     conection.close()
     
-    if res:
-        return jsonify({
-            "res": res[0]
-        })
-    
-    return jsonify({
-        "res": None
-    })
-
+    return jsonify({"res": res_id})

@@ -55,7 +55,7 @@ const RegisterTool = () => {
     setManteni("");
     setDescription("");
     setPhoto(null);
-    fetchTools();
+    // fetchTools();
     setShowModal(false); // Cerrar el modal después de agregar la herramienta
   };
 

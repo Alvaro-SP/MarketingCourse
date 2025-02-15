@@ -134,9 +134,7 @@ const Tools = () => {
   
   const [tools, setTools] = useState([]);
   const token = localStorage.getItem("token");
-  useEffect(() => {
-    fetchTools();
-  }, []);
+  
   const fetchTools = async () => {
     const response = await axios.post(url + "/tools", {idusuario: 1});
     setTools(response.data.tools);
@@ -149,7 +147,9 @@ const Tools = () => {
   //     .then(response => setTools(response.data))
   //     .catch(error => console.error("Error al obtener herramientas", error));
   // }, [token]);
-
+  useEffect(() => {
+    fetchTools();
+  }, []);
   return (
     <div>
 

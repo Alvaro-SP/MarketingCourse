@@ -52,9 +52,9 @@ def insert_tool(request):
     #* █████████████████████ CONNECT WITH DATABASE:█████████████████████
     try:
         conection = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="",
+            host="db-epost-fcjys-solicitudes.c4nomdu94wi7.us-east-1.rds.amazonaws.com",
+            user="integracion",
+            password="f5h6e8d5",
             database="marketingcourse"
         )
         print("Conexión establecida correctamente.")

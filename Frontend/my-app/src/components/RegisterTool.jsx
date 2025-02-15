@@ -3,7 +3,7 @@ import axios from "axios";
 import { Modal, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./RegisterTool.css";
-
+const url = "http://3.95.32.99:5000";
 const RegisterTool = () => {
   const [name, setName] = useState("");
   const [model, setModel] = useState("");
@@ -37,7 +37,7 @@ const RegisterTool = () => {
       formData.append("photo", photo); // Aquí enviamos la imagen como BLOB
   
       try {
-          const response = await fetch("http://localhost:5000/tool", {
+          const response = await fetch(url+"/tool", {
               method: "POST",
               body: formData, // Importante: no colocar headers 'Content-Type', Fetch lo hará automáticamente.
           });
@@ -140,30 +140,6 @@ const RegisterTool = () => {
           </div>
         </div>
       )}
-
-
-      {/* <ul>
-        {tools.map((tool) => (
-          <li key={tool.id} className="border p-2 my-2">
-            <p>
-              <strong>{tool.name}</strong>
-            </p>
-            <p>{tool.description}</p>
-            <img
-              src={`http://localhost:5000/${tool.qr_code}`}
-              alt="QR Code"
-              className="w-24 h-24"
-            />
-            {tool.photo && (
-              <img
-                src={`http://localhost:5000/${tool.photo}`}
-                alt="Tool"
-                className="w-24 h-24"
-              />
-            )}
-          </li>
-        ))}
-      </ul> */}
     </div>
   );
 };

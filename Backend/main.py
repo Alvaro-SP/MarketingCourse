@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 from src.QrAdd import insert_tool
-from src.Tools import toolsget
+from src.Tools import toolsget, get_tool_by_id
 from src.User import register, login
 
 from flask_cors import CORS
@@ -16,6 +16,15 @@ def get_tools():
     response = toolsget(request)
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
+
+# Endpoint para obtener una herramienta específica por ID
+@app.route('/tools/<int:tool_id>', methods=['GET'])
+def get_tool(tool_id):
+    tool = get_tool_by_id(tool_id)  # Busca la herramienta en la base de datos
+    if tool:
+        tool.headers.add('Access-Control-Allow-Origin', '*')
+        return tool
+    return jsonify({"error": "Herramienta no encontrada"}), 404
 
 #! Endpoint para registrar herramientas
 @app.route('/tool', methods=['POST'])

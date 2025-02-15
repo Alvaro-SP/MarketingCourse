@@ -5,7 +5,10 @@ import RegisterTool from "./components/RegisterTool";
 import ListTools from "./components/ListTools";
 import Webcam from "react-webcam";
 import jsQR from "jsqr";
+import './App.css';
+import ToolDetails from "./components/ToolDetails"; // La nueva página de detalles
 
+const url = "http://3.95.32.99:5000"
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -14,7 +17,7 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/register", { username, password });
+      await axios.post(url+":5000/register", { username, password });
       navigate("/login");
     } catch (error) {
       console.error("Error en registro", error);
@@ -39,10 +42,10 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
-    alert("hola");
+    alert("Bienvenido");
     e.preventDefault();
     try {
-      const response = await axios.post("http://192.168.0.24:5000/login", { username, password });
+      const response = await axios.post(url+"/login", { username, password });
       localStorage.setItem("token", response.data.token);
       navigate("/");
     } catch (error) {
@@ -53,12 +56,13 @@ const Login = () => {
 
   return (
     <div>
-      <h2>Login</h2>
+      <h2>Iniciar Sesión</h2>
       <form onSubmit={handleLogin}>
         <input type="text" placeholder="Usuario" value={username} onChange={(e) => setUsername(e.target.value)} required />
         <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
         <button type="submit" >Iniciar sesión</button>
       </form>
+      <footer>MERCADOTECNIA 1, USAC</footer>
     </div>
   );
 };
@@ -134,14 +138,14 @@ const Tools = () => {
     fetchTools();
   }, []);
   const fetchTools = async () => {
-    const response = await axios.post("http://192.168.0.24:5000/tools", {idusuario: 1});
+    const response = await axios.post(url + "/tools", {idusuario: 1});
     setTools(response.data.tools);
     console.log(response.data);
   };
 
   // useEffect(() => {
   //   if (!token) return;
-  //   axios.get("http://192.168.0.24:5000/tools", { headers: { Authorization: `Bearer ${token}` } })
+  //   axios.get(url+"/tools", { headers: { Authorization: `Bearer ${token}` } })
   //     .then(response => setTools(response.data))
   //     .catch(error => console.error("Error al obtener herramientas", error));
   // }, [token]);
@@ -152,6 +156,7 @@ const Tools = () => {
       <RegisterTool />
       <h1>Mis Herramientas</h1>
       <ListTools tools={tools} />
+      <footer>MERCADOTECNIA 1, USAC</footer>
     </div>
   );
 };
@@ -170,6 +175,8 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/qrscanner" element={<QrScanner />} />
         <Route path="/" element={<PrivateRoute element={<Tools />} />} />
+        <Route path="/tool-details/:id" element={<ToolDetails />} />
+
       </Routes>
     </Router>
   );

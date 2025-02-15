@@ -112,7 +112,7 @@ const RegisterTool = () => {
               />
               <input
                 type="text"
-                placeholder="Mantenimiento"
+                placeholder="Fecha Mantenimiento DD/MM/AAAA"
                 value={manteni}
                 onChange={(e) => setManteni(e.target.value)}
                 className="input-field"

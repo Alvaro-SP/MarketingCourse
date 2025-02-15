@@ -72,7 +72,7 @@ def insert_tool(request):
     # Preparar la consulta para insertar una herramienta
     sql = '''
         INSERT INTO tools (name, model, no_serie, own, manteni, qr, qr_image, photo)
-        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)'''
+        VALUES (%s, %s, %s, 1, %s, %s, %s, %s)'''
     qr, qr_blob = generate_qr(no_serie)
     valores = (name, model, no_serie, own, manteni, qr, qr_blob, photo_blob)
 

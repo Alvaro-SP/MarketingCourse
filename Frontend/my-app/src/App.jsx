@@ -8,7 +8,7 @@ import jsQR from "jsqr";
 import './App.css';
 import ToolDetails from "./components/ToolDetails"; // La nueva página de detalles
 
-const url = "http://3.95.32.99:5000"
+const url = "http://34.207.166.97:5000"
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");

@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import "./ToolDetails.css";
-const url = "http://3.95.32.99:5000"
+const url = "http://34.207.166.97:5000"
 
 const ToolDetails = () => {
   const { id } = useParams();

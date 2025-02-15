@@ -3,7 +3,7 @@ import axios from "axios";
 import { Modal, Button } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./RegisterTool.css";
-const url = "http://3.95.32.99:5000";
+const url = "http://34.207.166.97:5000";
 const RegisterTool = () => {
   const [name, setName] = useState("");
   const [model, setModel] = useState("");

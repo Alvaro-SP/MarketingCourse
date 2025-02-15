@@ -45,10 +45,11 @@ def insert_tool(request):
     no_serie = data['no_serie']
     own = data['own']
     manteni = data['manteni']
+    description = data['description']
     # photo = data['photo']
    
 
-    print(f"Datos recibidos: {name}, {model}, {no_serie}, {own}, {manteni}")
+    print(f"Datos recibidos: {name}, {model}, {no_serie}, {own}, {manteni}, {description}")
     #* █████████████████████ CONNECT WITH DATABASE:█████████████████████
     try:
         conection = mysql.connector.connect(
@@ -71,10 +72,10 @@ def insert_tool(request):
 
     # Preparar la consulta para insertar una herramienta
     sql = '''
-        INSERT INTO tools (name, model, no_serie, own, manteni, qr, qr_image, photo)
-        VALUES (%s, %s, %s, 1, %s, %s, %s, %s)'''
+        INSERT INTO tools (name, model, no_serie, own, manteni, qr, qr_image, photo, description)
+        VALUES (%s, %s, %s, 1, %s, %s, %s, %s, %s)'''
     qr, qr_blob = generate_qr(no_serie)
-    valores = (name, model, no_serie, own, manteni, qr, qr_blob, photo_blob)
+    valores = (name, model, no_serie, own, manteni, qr, qr_blob, photo_blob, description)
 
     try:
         cursor.execute(sql, valores)

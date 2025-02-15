@@ -35,6 +35,7 @@ const RegisterTool = () => {
       formData.append("own", own);
       formData.append("manteni", manteni);
       formData.append("photo", photo); // Aquí enviamos la imagen como BLOB
+      formData.append("description", description); // Aquí enviamos la imagen como BLOB
   
       try {
           const response = await fetch(url+"/tool", {

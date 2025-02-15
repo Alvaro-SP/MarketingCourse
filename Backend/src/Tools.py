@@ -103,7 +103,7 @@ def get_tool_by_id(tool_id):
 
     # Preparar la consulta para insertar una herramienta
     sql = '''
-        SELECT * FROM tools WHERE id = %s'''
+        SELECT * FROM tools WHERE no_serie = %s'''
     valores = (tool_id,)
     toolsgetted = ''
     try:

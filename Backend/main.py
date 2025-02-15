@@ -18,7 +18,7 @@ def get_tools():
     return response
 
 # Endpoint para obtener una herramienta específica por ID
-@app.route('/tools/<int:tool_id>', methods=['GET'])
+@app.route('/tools/<string:tool_id>', methods=['GET'])
 def get_tool(tool_id):
     tool = get_tool_by_id(tool_id)  # Busca la herramienta en la base de datos
     if tool:

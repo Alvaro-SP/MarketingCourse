@@ -36,7 +36,7 @@ const ToolGrid = ({ tools }) => {
               <p><strong>Modelo:</strong> {tool.model}</p>
               <p><strong>Serial:</strong> {tool.no_serie}</p>
               <p><strong>Fecha de mantenimiento:</strong> {tool.manteni}</p>
-              <button onClick={() => handleQRClick(tool.qr_image,tool.id)}>Ver QR</button>
+              <button onClick={() => handleQRClick(tool.qr_image,tool.no_serie)}>Ver QR</button>
             </div>
           </div>
         ))}

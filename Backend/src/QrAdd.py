@@ -75,7 +75,7 @@ def insert_tool(request):
         INSERT INTO tools (name, model, no_serie, own, manteni, qr, qr_image, photo, description)
         VALUES (%s, %s, %s, 1, %s, %s, %s, %s, %s)'''
     qr, qr_blob = generate_qr(no_serie)
-    valores = (name, model, no_serie, own, manteni, qr, qr_blob, photo_blob, description)
+    valores = (name, model, no_serie, manteni, qr, qr_blob, photo_blob, description)
 
     try:
         cursor.execute(sql, valores)
